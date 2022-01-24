@@ -31,7 +31,8 @@ namespace IdentityServer
 
             var builder = services.AddIdentityServer(options =>
             {
-                
+                options.Endpoints.EnableDeviceAuthorizationEndpoint = false;
+                //options.Endpoints. = false;
             }).AddConfigurationStore(s =>
             {
                 s.DefaultSchema = "configuration";
