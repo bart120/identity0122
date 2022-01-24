@@ -32,14 +32,23 @@ namespace IdentityServer.Controllers
 
         public async Task<IActionResult> AddClient()
         {
-            Client client = new Client();
+            /*Client client = new Client();
             client.ClientId = "client_console";
             client.ClientName = "Client en console";
             client.Description = "un client client credentials en formation";
             client.Enabled = true;
             client.AllowedGrantTypes = GrantTypes.ClientCredentials;
-            client.ClientSecrets = new List<Secret> { new Secret("secret_console".Sha256())};
-            
+            client.ClientSecrets = new List<Secret> { new Secret("secret_console".Sha256())};*/
+
+            Client client = new Client();
+            client.ClientId = "client_mvc";
+            client.ClientName = "Client en MVC";
+            client.Description = "un client hybrid en formation";
+            client.Enabled = true;
+            client.AllowedGrantTypes = GrantTypes.HybridAndClientCredentials;
+            client.ClientSecrets = new List<Secret> { new Secret("secret_mvc".Sha256()) };
+            client.AllowedScopes = new List<string> { "api_demo_scope" };
+
             _conf.Clients.Add(client.ToEntity());
             await _conf.SaveChangesAsync();
             return Ok();
