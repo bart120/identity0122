@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace IdentityServer
@@ -23,7 +25,27 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var migrationAssemblyName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
             services.AddControllersWithViews();
+
+            var builder = services.AddIdentityServer(options =>
+            {
+                
+            }).AddConfigurationStore(s =>
+            {
+                s.DefaultSchema = "configuration";
+                s.ConfigureDbContext = db => db.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"), 
+                    sql => sql.MigrationsAssembly(migrationAssemblyName));
+            }).AddOperationalStore(s =>
+            {
+                s.DefaultSchema = "operational";
+                s.ConfigureDbContext = db => db.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"),
+                    sql => sql.MigrationsAssembly(migrationAssemblyName));
+            });
+            
+
+            builder.AddDeveloperSigningCredential();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +65,8 @@ namespace IdentityServer
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseIdentityServer();
 
             app.UseAuthorization();
 
