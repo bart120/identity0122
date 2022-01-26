@@ -19,4 +19,9 @@ namespace IdentityServer.Models
 
         public string ReturnUrl { get; set; }
     }
+
+    public class LogoutViewModel
+    {
+        public string LogoutId { get; set; }
+    }
 }

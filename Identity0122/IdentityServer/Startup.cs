@@ -1,6 +1,11 @@
+using IdentityServer.AspIdentity;
+using IdentityServer.Services;
+using IdentityServer4.AspNetIdentity;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,9 +34,31 @@ namespace IdentityServer
 
             services.AddControllersWithViews();
 
+            services.AddDbContext<AuthenticationDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"));
+            });
+
+            //asp identity
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                //options.Password.RequiredLength = 8;
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.User.RequireUniqueEmail = true;
+                //...
+            })
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<AuthenticationDbContext>()
+                .AddUserManager<UserManager<User>>();
+
+
+
+            //identity server
             var builder = services.AddIdentityServer(options =>
             {
                 options.Endpoints.EnableDeviceAuthorizationEndpoint = false;
+                options.UserInteraction.LoginUrl = "/login";
+                options.UserInteraction.LogoutUrl = "/logout";
                 //options.Endpoints. = false;
             }).AddConfigurationStore(s =>
             {
@@ -43,8 +70,9 @@ namespace IdentityServer
                 s.DefaultSchema = "operational";
                 s.ConfigureDbContext = db => db.UseSqlServer(Configuration.GetConnectionString("IdentityConnection"),
                     sql => sql.MigrationsAssembly(migrationAssemblyName));
-            });
-            
+            }).AddAspNetIdentity<User>();
+
+            services.AddTransient<IProfileService, ProfilService>();
 
             builder.AddDeveloperSigningCredential();
         }
