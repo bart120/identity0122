@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MVCClient.Services.WeatherForecast>
+﻿@model IEnumerable<MVCClientCred.Services.WeatherForecast>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -10,9 +10,9 @@
 </div>
 
 @foreach (var item in Model)
-{
-    <div>
-        <p>@item.Summary</p>
-        <p>@item.TemperatureC °C</p>
-    </div>
-}
+	{
+<div>
+    <p>@item.Summary</p>
+    <p>@item.TemperatureC °C</p>
+</div>
+	}

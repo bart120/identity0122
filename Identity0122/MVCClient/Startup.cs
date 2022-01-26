@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MVCClient.Handlers;
+using MVCClient.Services;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -48,6 +51,9 @@ namespace MVCClient
                   options.SaveTokens = true;
                   options.Scope.Add("openid");
                   options.Scope.Add("profile");
+                  options.Scope.Add("api_demo_scope");
+                  options.Scope.Add("api_demo_scope_read");
+                  options.Scope.Add("api_demo_scope_write");
                   options.GetClaimsFromUserInfoEndpoint = true;
                   options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                   {
@@ -59,6 +65,13 @@ namespace MVCClient
 
 
               });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //handlers
+            services.AddTransient<HttpClientWeatherAuthorizationHandler>();
+
+            //services
+            services.AddHttpClient<IWeatherService, WeatherService>().AddHttpMessageHandler<HttpClientWeatherAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

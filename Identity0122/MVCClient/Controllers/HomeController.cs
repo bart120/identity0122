@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MVCClient.Models;
+using MVCClient.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,10 +17,12 @@ namespace MVCClient.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IWeatherService _serv;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IWeatherService serv)
         {
             _logger = logger;
+            _serv = serv;
         }
 
         public async  Task<IActionResult> Index()
@@ -27,8 +30,10 @@ namespace MVCClient.Controllers
             var accessToken = await HttpContext.GetTokenAsync("access_token");
             var idToken = await HttpContext.GetTokenAsync("id_token");
             var u = User;
-            
-            return View();
+
+            var weathers = await _serv.GetWeathersAsync();
+
+            return View(weathers);
         }
 
 

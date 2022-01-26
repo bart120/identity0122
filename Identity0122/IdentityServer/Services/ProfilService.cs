@@ -24,20 +24,22 @@ namespace IdentityServer.Services
         {
             //if (context.RequestedResources.RawScopeValues.Any(x => x == "role"))
             //{
-            if (context.Caller == "UserInfoEndpoint")
-            {
+            /*if (context.Caller == "UserInfoEndpoint")
+            {*/
                 var tokenProfileClaims = new List<Claim>();
                 User user = await _userManager.GetUserAsync(context.Subject);
                 if (user == null)
                     throw new ArgumentException("Invalid subject identifier");
 
                 var roles = await _userManager.GetRolesAsync(user);
+            //_userManager.GetCl
                 foreach (var item in roles)
                 {
                     tokenProfileClaims.Add(new Claim(JwtClaimTypes.Role, item));
                 }
+                tokenProfileClaims.Add(new Claim("product", "write"));
                 context.IssuedClaims.AddRange(tokenProfileClaims);
-            }
+            //}
             //}
         }
 

@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
-        //[Authorize(Policy = "write")]
+        [Authorize(Policy = "Write")]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {

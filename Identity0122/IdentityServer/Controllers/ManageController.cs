@@ -75,8 +75,24 @@ namespace IdentityServer.Controllers
              _conf.IdentityResources.Add(scopProfile.ToEntity());
              _conf.IdentityResources.Add(scopEmail.ToEntity());*/
 
+            /*ApiScope apiScope = new ApiScope();
+            apiScope.Name = "api_demo_scope_read";
+            apiScope.Enabled = true;
+            apiScope.UserClaims.Add("read");
+            _conf.ApiScopes.Add(apiScope.ToEntity());*/
 
-           
+            ApiScope apiScope = new ApiScope();
+            apiScope.Name = "api_demo_scope_write";
+            apiScope.Enabled = true;
+            apiScope.UserClaims.Add("role");
+            _conf.ApiScopes.Add(apiScope.ToEntity());
+
+            /*apiScope = new ApiScope();
+            apiScope.Name = "api_demo_scope_delete";
+            apiScope.Enabled = true;
+            apiScope.UserClaims.Add("delete");*/
+
+            _conf.ApiScopes.Add(apiScope.ToEntity());
 
             await _conf.SaveChangesAsync();
             return Ok();
@@ -110,5 +126,24 @@ namespace IdentityServer.Controllers
 
             return Ok();
         }
+
+        public async Task<IActionResult> AddCred()
+        {
+            Client client = new Client();
+            client.ClientId = "client_cred";
+            client.ClientName = "Client cred en MVC";
+            client.Description = "un client cred mvc en formation";
+            client.Enabled = true;
+            client.AllowedGrantTypes = GrantTypes.ClientCredentials;
+            client.ClientSecrets = new List<Secret> { new Secret("cred".Sha256()) };
+            client.AllowedScopes = new List<string> { "api_demo_scope" };
+
+            _conf.Clients.Add(client.ToEntity());
+
+            await _conf.SaveChangesAsync();
+            return Ok();
+        }
+
+
     }
 }

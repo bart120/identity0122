@@ -35,13 +35,28 @@ namespace WebAPI
                     options.Authority = "https://localhost:5001/";
                     options.RequireHttpsMetadata = true;
                     options.Audience = "api_demo";
-
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                         ValidateAudience = true
                     };
                 });
-
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Read", policy =>
+                {
+                    policy.RequireClaim("scope", "api_demo_scope_read");
+                });
+                options.AddPolicy("Write", policy =>
+                {
+                    policy.RequireClaim("scope", "api_demo_scope_write");
+                    policy.RequireClaim("product", "write");
+                });
+                options.AddPolicy("Delete", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "api_demo_scope_delete");
+                });
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });

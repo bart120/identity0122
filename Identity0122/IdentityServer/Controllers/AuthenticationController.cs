@@ -51,18 +51,20 @@ namespace IdentityServer.Controllers
         [Route("logout")]
         public async Task<IActionResult> Logout(LogoutViewModel model)
         {
+            if (User?.Identity.IsAuthenticated == true)
+            {
+                //externe
+                /*var url = Url.Action("Logout", new { logoutId = model.LogoutId });
+                return SignOut(new Microsoft.AspNetCore.Authentication.AuthenticationProperties { RedirectUri = url }, "schema");*/
 
-            //externe
-            /*var url = Url.Action("Logout", new { logoutId = model.LogoutId });
-            return SignOut(new Microsoft.AspNetCore.Authentication.AuthenticationProperties { RedirectUri = url }, "schema");*/
+                var contextLogout = await _interaction.GetLogoutContextAsync(model.LogoutId);
 
-            var contextLogout = await _interaction.GetLogoutContextAsync(model.LogoutId);
-            
-            await _signManager.SignOutAsync();
+                await _signManager.SignOutAsync();
 
-            return Redirect(contextLogout.PostLogoutRedirectUri);
-            //return RedirectToAction("index", "home");
-
+                return Redirect(contextLogout.PostLogoutRedirectUri);
+                //return RedirectToAction("index", "home");
+            }
+            return BadRequest();
         }
     }
 }
